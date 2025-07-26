@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Retail Control</title>
+    <link rel="icon" th:href="@{/favicon.png}" type="image/png"/>
+    <link rel="stylesheet" th:href="@{/styles.css}" type="text/css"/>
+</head>
+<body>
+<div id="root">
+    <header>
+        <div class="retail-control-box">
+            <img th:src="@{/favicon.png}" alt="" class="icon-35x35">
+            <span class="retail-control-title">Retail Control</span>
+        </div>
+        <form th:action="@{/retail-control/search}" method="get" class="barcode-search-form">
+            <label for="barcodeValue"></label>
+            <input id="barcodeValue" type="search" name="barcode" placeholder="Введіть штрихкод"
+                   autocomplete="off" class="barcode-search-input"/>
+            <button type="submit" class="header-btn">
+                <img th:src="@{/svg/search.svg}" alt="" class="header-btn-icon">Пошук
+            </button>
+        </form>
+        <div class="add-product-panel">
+            <button id="openAddProductModalBtn" type="button" class="header-btn">
+                <img th:src="@{/svg/plus-circle.svg}" alt="" class="header-btn-icon">Додати товар
+            </button>
+        </div>
+    </header>
+    <main>
+        <div class="menu-background">
+            <div class="menu-box">
+                <div class="menu-title-box">
+                    <img th:src="@{/svg/list.svg}" alt="" class="icon-30x30">
+                    <span class="title-25">Каталог</span>
+                </div>
+                <ul id="productCategories">
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/aromatizatori}" class="category-link">Ароматизатори</a>
+                    </li>
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/povitryani_filtri}" class="category-link">Повітряні
+                            фільтри</a>
+                    </li>
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/maslyani_filtri}" class="category-link">Масляні
+                            фільтри</a>
+                    </li>
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/oliva}" class="category-link">Олива</a>
+                    </li>
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/antifriz}" class="category-link">Антифриз</a>
+                    </li>
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/elektroobladnannya}" class="category-link">Електрообладнання</a>
+                    </li>
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/avtohimiya}" class="category-link">Автохімія</a>
+                    </li>
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/omivachi}" class="category-link">Омивачі</a>
+                    </li>
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/instrument}" class="category-link">Інструмент</a>
+                    </li>
+                    <li class="category-item">
+                        <img th:src="@{/svg/folder.svg}" alt="Папка" class="icon-22x22">
+                        <a th:href="@{/retail-control/category/aksesuari_dlya_transportnih_zasobiv}"
+                           class="category-link">Аксесуари для ТЗ</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="product-cards-box">
+            <div th:each="card : ${productCards}" class="product-card">
+                <div class="image-box image-box-150x150" style="cursor: default">
+                    <img th:src="@{'/' + ${card.imagePath}}" alt="Фото товару" class="product-card-image">
+                </div>
+                <div class="product-card-description">
+                    <p th:text="${card.name}" class="title-18"></p>
+                    <div>
+                        <p class="product-card-info-row">
+                            <span th:text="'Виробник: ' + ${card.manufacturer}"></span>
+                            <span th:text="'Кількість: ' + ${card.quantity} + ' ' + ${card.unit}"></span>
+                        </p>
+                        <p class="product-card-info-row">
+                            <span th:text="'Штрихкод: ' + ${card.barcode}"></span>
+                            <span th:text="'Ціна: ' + ${card.price} + ' грн'"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<!--Модальне вікно для зміни інформації про товар та його видалення-->
+<div id="searchProductModal" th:if="${productEditForm != null}" style="display: block" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="title-25">Інформація про товар</span>
+            <button id="closeSearchProductModalBtn" type="button" class="modal-close-btn">
+                <img th:src="@{/svg/x-lg.svg}" alt="Закрити" class="icon-30x30">
+            </button>
+        </div>
+        <div class="form-in-modal">
+            <div class="content-column">
+                <div class="form-group">
+                    <p>Фото</p>
+                    <div class="image-box image-196x196">
+                        <img th:src="@{'/' + ${productEditForm.imagePath}}" alt="Фото товару">
+                    </div>
+                </div>
+                <form th:action="@{/retail-control/delete(barcode=${barcode})}" method="post"
+                      class="product-add-modal-footer">
+                    <button type="submit" style="width: 206px" class="modal-btn modal-delete-btn">Видалить</button>
+                </form>
+            </div>
+            <form th:action="@{/retail-control/edit(barcode=${barcode})}" th:object="${productEditForm}" method="post"
+                  style="margin-right: 15px">
+                <div class="form-content">
+                    <div class="form-group">
+                        <label for="productName">Назва*</label>
+                        <input id="productName" type="text" th:field="*{name}" class="input-control"
+                               placeholder="Введіть назву товару">
+                        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="productManufacturer">Виробник*</label>
+                        <input id="productManufacturer" type="text" th:field="*{manufacturer}" class="input-control"
+                               placeholder="Введіть назву виробника">
+                        <div th:if="${#fields.hasErrors('manufacturer')}" th:errors="*{manufacturer}"
+                             class="error-message"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productPrice">Ціна*</label>
+                            <input id="productPrice" type="number" th:field="*{price}" class="input-control"
+                                   placeholder="Введіть ціну">
+                            <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="productQuantity">Кількість*</label>
+                            <input id="productQuantity" type="number" th:field="*{quantity}" class="input-control"
+                                   placeholder="Введіть кількість одиниць">
+                            <div th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"
+                                 class="error-message"></div>
+                        </div>
+                    </div>
+                    <div class="product-add-modal-footer">
+                        <button type="reset" class="modal-btn modal-reset-btn">Скасувати</button>
+                        <button type="submit" style="width: 200px" class="modal-btn modal-save-btn">Зберегти зміни
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--Модальне вікно для додавання нових товарів-->
+<div id="addProductModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="title-25">Додати товар</span>
+            <button id="closeAddProductModalBtn" type="button" class="modal-close-btn">
+                <img th:src="@{/svg/x-lg.svg}" alt="Закрити" class="icon-30x30">
+            </button>
+        </div>
+        <form th:action="@{/retail-control/save}" th:object="${productCreateForm}" method="post"
+              enctype="multipart/form-data" class="form-in-modal">
+            <div class="form-group">
+                <label>Фото</label>
+                <input id="imageFileInput" type="file" name="imageFile" accept="image/*" style="display: none"/>
+                <div id="dropZone" tabindex="0" class="image-box image-box-150x150">
+                    Перетягніть або вставте зображення сюди (до 5 MB)
+                </div>
+                <p class="format-image-info">Підтримувані формати:</p>
+                <ul style="margin-left: 20px">
+                    <li class="format-image-info">.jpeg/.jpg</li>
+                    <li class="format-image-info">.png</li>
+                    <li class="format-image-info">.bmp</li>
+                    <li class="format-image-info">.gif</li>
+                    <li class="format-image-info">.wbmp</li>
+                    <li class="format-image-info">.webp</li>
+                </ul>
+            </div>
+            <div class="form-content">
+                <div class="form-group">
+                    <label for="name">Назва*</label>
+                    <input id="name" type="text" th:field="*{name}" class="input-control"
+                           placeholder="Введіть назву товару">
+                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="manufacturer">Виробник*</label>
+                        <input id="manufacturer" type="text" th:field="*{manufacturer}" class="input-control"
+                               placeholder="Введіть назву виробника">
+                        <div th:if="${#fields.hasErrors('manufacturer')}" th:errors="*{manufacturer}"
+                             class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="barcode">Штрихкод*</label>
+                        <input id="barcode" type="text" th:field="*{barcode}" class="input-control"
+                               placeholder="Введіть або відскануйте штрихкод">
+                        <div th:if="${#fields.hasErrors('barcode')}" th:errors="*{barcode}" class="error-message"></div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Категорія</label>
+                        <select id="category" th:field="*{category}" class="input-control" style="padding-left: 5px">
+                            <option value="aromatizatori">Ароматизатори</option>
+                            <option value="povitryani_filtri">Повітряні фільтри</option>
+                            <option value="maslyani_filtri">Масляні фільтри</option>
+                            <option value="oliva">Олива</option>
+                            <option value="antifriz">Антифриз</option>
+                            <option value="elektroobladnannya">Електрообладнання</option>
+                            <option value="avtohimiya">Автохімія</option>
+                            <option value="omivachi">Омивачі</option>
+                            <option value="instrument">Інструмент</option>
+                            <option value="aksesuari_dlya_transportnih_zasobiv">Аксесуари для ТЗ
+                        </select>
+                    </div>
+                    <div class="form-group" style="width: 22%">
+                        <label for="price">Ціна*</label>
+                        <input id="price" type="number" th:field="*{price}" class="input-control">
+                        <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error-message"></div>
+                    </div>
+                    <div class="form-group" style="width: 22%">
+                        <label for="quantity">Кількість*</label>
+                        <input id="quantity" type="number" th:field="*{quantity}" class="input-control">
+                        <div th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"
+                             class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="unit">Одиниця</label>
+                        <select id="unit" th:field="*{unit}" class="input-control" style="padding-left: 5px">
+                            <option value="шт"> шт</option>
+                            <option value="л"> л</option>
+                            <option value="кг"> кг</option>
+                            <option value="мл"> мл</option>
+                            <option value="м"> м</option>
+                            <option value="компл"> компл</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="product-add-modal-footer">
+                    <button type="reset" class="modal-btn modal-reset-btn">Скасувати</button>
+                    <button type="submit" class="modal-btn modal-save-btn">Зберегти</button>
+                </div>
+            </div>
+            <input type="hidden" id="hasErrors" th:value="${#fields.hasErrors()}"/>
+        </form>
+    </div>
+</div>
+<input type="hidden" id="productNotFound" th:value="${productNotFound}"/>
+<input type="hidden" id="isBarcodeBlank" th:value="${isBarcodeBlank}"/>
+<input type="hidden" id="hasFailed" th:value="${param.saveFailed}"/>
+<div id="failedAction" class="toast" style="display: none">
+    <div class="toast-content">
+        <img th:src="@{/svg/x-circle.svg}" alt="Невдало" class="icon-50x50">
+        <span class="toast-message"></span>
+    </div>
+</div>
+<input type="hidden" id="deleteSuccess" th:value="${param.deleteSuccess}"/>
+<input type="hidden" id="editSuccess" th:value="${param.editSuccess}"/>
+<input type="hidden" id="hasSuccess" th:value="${param.saveSuccess}"/>
+<div id="successAction" class="toast" style="display: none">
+    <div class="toast-content">
+        <img th:src="@{/svg/check2-circle.svg}" alt="Успішно" class="icon-50x50">
+        <span class="toast-message"></span>
+    </div>
+</div>
+<script src="/js/modal-control.js"></script>
+<script src="/js/image-upload.js"></script>
+</body>
+</html>
